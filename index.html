@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>日本の遺産マップ</title>
 
-  <!-- Leaflet -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -38,9 +37,22 @@
       height: calc(100vh - 110px);
     }
 
+    .popup-img {
+      width: 100%;
+      max-width: 220px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+    }
+
+    .popup-place {
+      font-size: 12px;
+      color: #555;
+    }
+
     .popup-title {
       font-weight: bold;
-      font-size: 15px;
+      font-size: 14px;
+      margin-top: 2px;
     }
 
     .world {
@@ -61,59 +73,56 @@
 
 <header>
   <h2>🇯🇵 日本の遺産マップ</h2>
-  <input id="search" type="text" placeholder="遺産名を検索（例：富士山）">
+  <input id="search" type="text" placeholder="遺産名・県名で検索">
 </header>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // 遺産データ（サンプル）
   const heritages = [
     // 世界遺産
     {
       type: "world",
       name: "富士山",
+      pref: "山梨県・静岡県",
+      area: "富士山周辺",
       desc: "信仰の対象と芸術の源泉。",
+      img: "https://upload.wikimedia.org/wikipedia/commons/1/12/Mount_Fuji_from_Hakone.jpg",
       lat: 35.3606,
       lng: 138.7274
     },
     {
       type: "world",
       name: "原爆ドーム",
-      desc: "広島の平和記念碑。",
+      pref: "広島県",
+      area: "広島市",
+      desc: "平和の尊さを伝える記念碑。",
+      img: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Atomic_Bomb_Dome_2016.jpg",
       lat: 34.3955,
       lng: 132.4536
-    },
-    {
-      type: "world",
-      name: "姫路城",
-      desc: "日本で最も保存状態の良い城。",
-      lat: 34.8394,
-      lng: 134.6939
     },
 
     // 日本遺産
     {
       type: "japan",
       name: "出羽三山",
+      pref: "山形県",
+      area: "鶴岡市",
       desc: "山岳信仰が育んだ霊場。",
+      img: "https://upload.wikimedia.org/wikipedia/commons/0/0c/Dewa_Sanzan.jpg",
       lat: 38.5465,
       lng: 139.9856
     },
     {
       type: "japan",
       name: "鎌倉",
-      desc: "武士の都として発展。",
+      pref: "神奈川県",
+      area: "鎌倉市",
+      desc: "武士の都として栄えた歴史都市。",
+      img: "https://upload.wikimedia.org/wikipedia/commons/6/6e/Kamakura_Great_Buddha.jpg",
       lat: 35.3192,
       lng: 139.5467
-    },
-    {
-      type: "japan",
-      name: "西の都 大宰府",
-      desc: "古代日本の政治・文化拠点。",
-      lat: 33.5213,
-      lng: 130.5353
     }
   ];
 
@@ -138,32 +147,36 @@
     })
   };
 
-  const markers = [];
+  let markers = [];
 
   function showMarkers(list) {
     markers.forEach(m => map.removeLayer(m));
-    markers.length = 0;
+    markers = [];
 
     list.forEach(h => {
       const marker = L.marker([h.lat, h.lng], { icon: icons[h.type] })
         .addTo(map)
         .bindPopup(`
+          <img class="popup-img" src="${h.img}">
+          <div class="popup-place">${h.pref}｜${h.area}</div>
           <div class="popup-title ${h.type}">
             ${h.type === "world" ? "世界遺産" : "日本遺産"}：${h.name}
           </div>
           <div class="popup-desc">${h.desc}</div>
         `);
+
       markers.push(marker);
     });
   }
 
   showMarkers(heritages);
 
-  // 検索
+  // 検索（名前・県名対応）
   document.getElementById('search').addEventListener('input', e => {
     const key = e.target.value.toLowerCase();
     const filtered = heritages.filter(h =>
-      h.name.toLowerCase().includes(key)
+      h.name.toLowerCase().includes(key) ||
+      h.pref.toLowerCase().includes(key)
     );
     showMarkers(filtered);
   });
@@ -171,6 +184,4 @@
 
 </body>
 </html>
-
-
 
