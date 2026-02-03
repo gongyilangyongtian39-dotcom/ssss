@@ -2,8 +2,9 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>日本の遺産マップ</title>
+  <title>四国 観光・グルメマップ</title>
 
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -55,12 +56,12 @@
       margin-top: 2px;
     }
 
-    .world {
-      color: #d32f2f;
+    .spot {
+      color: #d32f2f; /* 赤ピン */
     }
 
-    .japan {
-      color: #1976d2;
+    .food {
+      color: #388e3c; /* 緑ピン */
     }
 
     .popup-desc {
@@ -72,75 +73,98 @@
 <body>
 
 <header>
-  <h2>🇯🇵 日本の遺産マップ</h2>
-  <input id="search" type="text" placeholder="遺産名・県名で検索">
+  <h2>🗾 四国 観光＆グルメマップ</h2>
+  <input id="search" type="text" placeholder="名前・市町村で検索">
 </header>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  const heritages = [
-    // 世界遺産
+  const spots = [
+    // 観光スポット（赤）
     {
-      type: "world",
-      name: "富士山",
-      pref: "山梨県・静岡県",
-      area: "富士山周辺",
-      desc: "信仰の対象と芸術の源泉。",
-      img: "https://upload.wikimedia.org/wikipedia/commons/1/12/Mount_Fuji_from_Hakone.jpg",
-      lat: 35.3606,
-      lng: 138.7274
+      type: "spot",
+      name: "高知城",
+      city: "高知市",
+      desc: "江戸時代初期に建てられた名城。",
+      img: "https://upload.wikimedia.org/wikipedia/commons/2/22/Kochi_Castle_Main_Tower.jpg",
+      lat: 33.5594,
+      lng: 133.5310
     },
     {
-      type: "world",
-      name: "原爆ドーム",
-      pref: "広島県",
-      area: "広島市",
-      desc: "平和の尊さを伝える記念碑。",
-      img: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Atomic_Bomb_Dome_2016.jpg",
-      lat: 34.3955,
-      lng: 132.4536
+      type: "spot",
+      name: "桂浜",
+      city: "高知市",
+      desc: "坂本龍馬像で有名な海岸。",
+      img: "https://upload.wikimedia.org/wikipedia/commons/0/0a/Katsurahama_beach.jpg",
+      lat: 33.5169,
+      lng: 133.5389
+    },
+    {
+      type: "spot",
+      name: "四万十川",
+      city: "四万十市",
+      desc: "日本最後の清流として知られる川。おすすめ！",
+      img: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Shimanto_river.jpg",
+      lat: 33.2047,
+      lng: 132.9347
+    },
+    {
+      type: "spot",
+      name: "道後温泉",
+      city: "松山市",
+      desc: "四国最古の温泉地。",
+      img: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Dogo_Onsen_Honkan.jpg",
+      lat: 33.8406,
+      lng: 132.7650
     },
 
-    // 日本遺産
+    // グルメ（緑）
     {
-      type: "japan",
-      name: "出羽三山",
-      pref: "山形県",
-      area: "鶴岡市",
-      desc: "山岳信仰が育んだ霊場。",
-      img: "https://upload.wikimedia.org/wikipedia/commons/0/0c/Dewa_Sanzan.jpg",
-      lat: 38.5465,
-      lng: 139.9856
+      type: "food",
+      name: "ひろめ市場",
+      city: "高知市",
+      desc: "カツオのたたきや土佐料理が楽しめる市場。",
+      img: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Hirome_market_Kochi.jpg",
+      lat: 33.5580,
+      lng: 133.5305
     },
     {
-      type: "japan",
-      name: "鎌倉",
-      pref: "神奈川県",
-      area: "鎌倉市",
-      desc: "武士の都として栄えた歴史都市。",
-      img: "https://upload.wikimedia.org/wikipedia/commons/6/6e/Kamakura_Great_Buddha.jpg",
-      lat: 35.3192,
-      lng: 139.5467
+      type: "food",
+      name: "讃岐うどん店",
+      city: "高松市",
+      desc: "香川名物の讃岐うどんを味わえる。",
+      img: "https://upload.wikimedia.org/wikipedia/commons/1/11/Sanuki_udon.jpg",
+      lat: 34.3401,
+      lng: 134.0434
+    },
+    {
+      type: "food",
+      name: "四万十川の鮎料理",
+      city: "四万十市",
+      desc: "鮎の塩焼きや鮎めしが人気。",
+      img: "https://upload.wikimedia.org/wikipedia/commons/6/69/Ayu_grilled.jpg",
+      lat: 33.2030,
+      lng: 132.9330
     }
   ];
 
-  const map = L.map('map').setView([36.5, 138], 5);
+  const map = L.map('map').setView([33.7, 133.5], 7); // 四国メイン表示
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
   }).addTo(map);
 
   const icons = {
-    world: L.icon({
+    spot: L.icon({
       iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
       shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
       iconSize: [25, 41],
       iconAnchor: [12, 41]
     }),
-    japan: L.icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+    food: L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
       shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
       iconSize: [25, 41],
       iconAnchor: [12, 41]
@@ -158,25 +182,22 @@
         .addTo(map)
         .bindPopup(`
           <img class="popup-img" src="${h.img}">
-          <div class="popup-place">${h.pref}｜${h.area}</div>
-          <div class="popup-title ${h.type}">
-            ${h.type === "world" ? "世界遺産" : "日本遺産"}：${h.name}
-          </div>
+          <div class="popup-place">${h.city}</div>
+          <div class="popup-title ${h.type}">${h.name}</div>
           <div class="popup-desc">${h.desc}</div>
         `);
-
       markers.push(marker);
     });
   }
 
-  showMarkers(heritages);
+  showMarkers(spots);
 
-  // 検索（名前・県名対応）
+  // 検索機能（名前・市町村）
   document.getElementById('search').addEventListener('input', e => {
     const key = e.target.value.toLowerCase();
-    const filtered = heritages.filter(h =>
+    const filtered = spots.filter(h =>
       h.name.toLowerCase().includes(key) ||
-      h.pref.toLowerCase().includes(key)
+      h.city.toLowerCase().includes(key)
     );
     showMarkers(filtered);
   });
@@ -184,3 +205,4 @@
 
 </body>
 </html>
+
