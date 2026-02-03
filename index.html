@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>四国 観光・グルメマップ</title>
+  <title>高知県 観光・グルメマップ</title>
 
   <!-- Leaflet CSS -->
   <link
@@ -73,7 +73,7 @@
 <body>
 
 <header>
-  <h2>🗾 四国 観光＆グルメマップ</h2>
+  <h2>🏞️ 高知県 観光＆グルメマップ</h2>
   <input id="search" type="text" placeholder="名前・市町村で検索">
 </header>
 
@@ -105,19 +105,10 @@
       type: "spot",
       name: "四万十川",
       city: "四万十市",
-      desc: "日本最後の清流として知られる川。おすすめ！",
+      desc: "日本最後の清流として知られる川。",
       img: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Shimanto_river.jpg",
       lat: 33.2047,
       lng: 132.9347
-    },
-    {
-      type: "spot",
-      name: "道後温泉",
-      city: "松山市",
-      desc: "四国最古の温泉地。",
-      img: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Dogo_Onsen_Honkan.jpg",
-      lat: 33.8406,
-      lng: 132.7650
     },
 
     // グルメ（緑）
@@ -132,12 +123,12 @@
     },
     {
       type: "food",
-      name: "讃岐うどん店",
-      city: "高松市",
-      desc: "香川名物の讃岐うどんを味わえる。",
-      img: "https://upload.wikimedia.org/wikipedia/commons/1/11/Sanuki_udon.jpg",
-      lat: 34.3401,
-      lng: 134.0434
+      name: "室戸の海鮮",
+      city: "室戸市",
+      desc: "新鮮な魚介を使った名物料理が豊富。",
+      img: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Muroto_fish_market.jpg",
+      lat: 33.2782,
+      lng: 134.1231
     },
     {
       type: "food",
@@ -150,7 +141,7 @@
     }
   ];
 
-  const map = L.map('map').setView([33.7, 133.5], 7); // 四国メイン表示
+  const map = L.map('map').setView([33.5, 133.5], 8);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
