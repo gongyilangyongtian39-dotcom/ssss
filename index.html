@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>世界遺産マップ</title>
+  <title>日本の遺産マップ</title>
 
   <!-- Leaflet -->
   <link
@@ -14,24 +14,24 @@
     body {
       margin: 0;
       font-family: system-ui, sans-serif;
-      background: #f2f2f2;
+      background: #f4f4f4;
     }
 
     header {
+      background: #1e1e1e;
+      color: #fff;
       padding: 12px;
-      background: #222;
-      color: white;
       text-align: center;
     }
 
     #search {
+      margin-top: 8px;
+      padding: 8px 12px;
       width: 90%;
       max-width: 400px;
-      padding: 8px 12px;
-      margin-top: 10px;
       border-radius: 8px;
       border: none;
-      font-size: 16px;
+      font-size: 15px;
     }
 
     #map {
@@ -40,11 +40,19 @@
 
     .popup-title {
       font-weight: bold;
-      color: #c62828;
+      font-size: 15px;
+    }
+
+    .world {
+      color: #d32f2f;
+    }
+
+    .japan {
+      color: #1976d2;
     }
 
     .popup-desc {
-      font-size: 14px;
+      font-size: 13px;
       margin-top: 4px;
     }
   </style>
@@ -52,75 +60,116 @@
 <body>
 
 <header>
-  <h2>🌍 世界遺産マップ</h2>
-  <input id="search" type="text" placeholder="世界遺産を検索（例：富士山）">
+  <h2>🇯🇵 日本の遺産マップ</h2>
+  <input id="search" type="text" placeholder="遺産名を検索（例：富士山）">
 </header>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // 世界遺産データ（サンプル）
+  // 遺産データ（サンプル）
   const heritages = [
+    // 世界遺産
     {
+      type: "world",
       name: "富士山",
-      desc: "日本を代表する霊峰。",
+      desc: "信仰の対象と芸術の源泉。",
       lat: 35.3606,
       lng: 138.7274
     },
     {
-      name: "タージ・マハル",
-      desc: "インドの白い大理石の霊廟。",
-      lat: 27.1751,
-      lng: 78.0421
+      type: "world",
+      name: "原爆ドーム",
+      desc: "広島の平和記念碑。",
+      lat: 34.3955,
+      lng: 132.4536
     },
     {
-      name: "マチュ・ピチュ",
-      desc: "インカ帝国の空中都市。",
-      lat: -13.1631,
-      lng: -72.5450
+      type: "world",
+      name: "姫路城",
+      desc: "日本で最も保存状態の良い城。",
+      lat: 34.8394,
+      lng: 134.6939
+    },
+
+    // 日本遺産
+    {
+      type: "japan",
+      name: "出羽三山",
+      desc: "山岳信仰が育んだ霊場。",
+      lat: 38.5465,
+      lng: 139.9856
     },
     {
-      name: "コロッセオ",
-      desc: "古代ローマの円形闘技場。",
-      lat: 41.8902,
-      lng: 12.4922
+      type: "japan",
+      name: "鎌倉",
+      desc: "武士の都として発展。",
+      lat: 35.3192,
+      lng: 139.5467
+    },
+    {
+      type: "japan",
+      name: "西の都 大宰府",
+      desc: "古代日本の政治・文化拠点。",
+      lat: 33.5213,
+      lng: 130.5353
     }
   ];
 
-  const map = L.map('map').setView([20, 0], 2);
+  const map = L.map('map').setView([36.5, 138], 5);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
   }).addTo(map);
 
-  const markers = [];
+  const icons = {
+    world: L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41]
+    }),
+    japan: L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41]
+    })
+  };
 
-  const redIcon = L.icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
-  });
+  const markers = [];
 
   function showMarkers(list) {
     markers.forEach(m => map.removeLayer(m));
     markers.length = 0;
 
     list.forEach(h => {
-      const marker = L.marker([h.lat, h.lng], { icon: redIcon })
+      const marker = L.marker([h.lat, h.lng], { icon: icons[h.type] })
         .addTo(map)
         .bindPopup(`
-          <div class="popup-title">${h.name}</div>
+          <div class="popup-title ${h.type}">
+            ${h.type === "world" ? "世界遺産" : "日本遺産"}：${h.name}
+          </div>
           <div class="popup-desc">${h.desc}</div>
         `);
-
       markers.push(marker);
     });
   }
 
   showMarkers(heritages);
 
-  // 検索機能
-  document.getElementById('search').addEventL
+  // 検索
+  document.getElementById('search').addEventListener('input', e => {
+    const key = e.target.value.toLowerCase();
+    const filtered = heritages.filter(h =>
+      h.name.toLowerCase().includes(key)
+    );
+    showMarkers(filtered);
+  });
+</script>
+
+</body>
+</html>
+
 
